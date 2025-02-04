@@ -1,12 +1,21 @@
+require('dotenv').config();
+const app = require('./app');
 const http = require('http');
-const app = require('./app'); 
-const port = process.env.PORT || 3000;
-const { initializeSocket } = require("./socket"); 
+const socketio = require('socket.io');
+const connectDB = require('./db/db');
+
+const PORT = process.env.PORT || 4000;
 
 const server = http.createServer(app);
+const io = socketio(server);
 
-initializeSocket(server);
+connectDB();
 
-server.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+io.on('connection', (socket) => {
+  console.log('New WebSocket connection');
+  // ...existing socket.io code...
+});
+
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
