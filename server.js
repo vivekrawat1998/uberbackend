@@ -9,12 +9,22 @@ const rideRoutes = require('./routes/ride.routes');
 const mapRoutes = require('./routes/maps.routes'); 
 const { sendMessageToSocketId } = require('./socket');
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 
 const app = express();
 const server = http.createServer(app);
 
+const corsOptions = {
+  origin: ['https://uberclonefrontend.vercel.app/', 'https://uberbackend-production.up.railway.app'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
 
+app.use(cors(corsOptions));
 
+app.options('*', cors(corsOptions));
 
 const io = socketIo(server, {
   cors: corsOptions
