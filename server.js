@@ -13,17 +13,24 @@ const cors = require('cors');
 
 const app = express();
 const server = http.createServer(app);
+
+const corsOptions = {
+  origin: ['http://localhost:5173', 'https://uberbackend-production.up.railway.app'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+
+// Enable pre-flight requests
+app.options('*', cors(corsOptions));
+
 const io = socketIo(server, {
-  cors: {
-    origin: '*',
-  },
+  cors: corsOptions
 });
 
-app.use(cors({
-  origin: 'http://localhost:5173', 
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
-}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -41,6 +48,11 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     console.log('Client disconnected', socket.id);
+  });
+
+  socket.on('error', (err) => {
+    console.error('Socket encountered error: ', err.message, 'Closing socket');
+    socket.close();
   });
 
   // Add more WebSocket event handlers here

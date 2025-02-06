@@ -29,6 +29,8 @@ const registerUser = async (req, res, next) => {
 
     const token = user.generateAuthToken();
 
+    res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
+    res.header('Access-Control-Allow-Credentials', 'true');
     res.status(201).json({ token, user });
 
 
@@ -83,4 +85,3 @@ module.exports = {
     getUserProfile,
     logoutUser
   };
-  
