@@ -10,7 +10,11 @@ const riderouter = require("./routes/ride.routes");
 const cors = require('cors');
 const connectDB = require('./db/db');
 
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173', // Specify the allowed origin
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
 app.use(cookieparser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
