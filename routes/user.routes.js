@@ -1,29 +1,24 @@
 const express = require('express');
-const router = express.Router();
-const { body } = require("express-validator")
-const userController = require("../controllers/user.controllers")
-const authMiddleware = require('../middlewares/auth.middleware');
+const { registerUser, loginUser, getUserProfile, logoutUser } = require('../controllers/user.controllers');
+const { check } = require('express-validator');
+const { authUser } = require('../middlewares/auth.middleware');
 
+const router = express.Router();
 
 router.post('/register', [
-    body('email').isEmail().withMessage('Invalid Email'),
-    body('fullname.firstname').isLength({ min: 3 }).withMessage('First name must be at least 3 characters long'),
-    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
-],
-    userController.registerUser
-)
+    check('fullname.firstname').isLength({ min: 3 }).withMessage('First name must be at least 3 characters long'),
+    check('fullname.lastname').isLength({ min: 3 }).withMessage('Last name must be at least 3 characters long'),
+    check('email').isEmail().withMessage('Please enter a valid email'),
+    check('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
+], registerUser);
 
 router.post('/login', [
-    body('email').isEmail().withMessage('Invalid Email'),
-    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
-],
-    userController.loginUser
-)
+    check('email').isEmail().withMessage('Invalid Email'),
+    check('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
+], loginUser);
 
-router.get('/profile', authMiddleware.authUser, userController.getUserProfile)
+router.get('/profile', authUser, getUserProfile);
 
-router.get('/logout', authMiddleware.authUser, userController.logoutUser)
-
-
+router.get('/logout', authUser, logoutUser);
 
 module.exports = router;
