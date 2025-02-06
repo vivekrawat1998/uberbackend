@@ -7,7 +7,6 @@ const userRouter = require("./routes/user.routes");
 const captainRouter = require('./routes/captain.routes');
 const mapRouter = require('./routes/maps.routes');
 const riderouter = require("./routes/ride.routes");
-const path = require('path');
 const cors = require('cors');
 const connectDB = require('./db/db');
 
