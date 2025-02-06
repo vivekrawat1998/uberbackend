@@ -6,6 +6,9 @@ const connectDB = require('./db/db');
 
 const PORT = process.env.PORT || 4000;
 
+// Log environment variables to verify
+console.log('MONGODB_URI:', process.env.MONGODB_URI);
+
 const server = http.createServer(app);
 const io = socketio(server);
 
@@ -13,9 +16,8 @@ connectDB();
 
 io.on('connection', (socket) => {
   console.log('New WebSocket connection');
-  // ...existing socket.io code...
 });
 
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });

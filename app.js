@@ -24,11 +24,10 @@ app.use('/captains', captainRouter);
 app.use('/maps', mapRouter);
 app.use('/ride', riderouter);
 
-// Serve static files from the React app
 app.use(express.static(path.join(__dirname, 'client/build')));
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname + '/client/build/index.html'));
+  res.sendFile(path.join(__dirname, 'client/build', 'index.html'));
 });
 
 app.get('/', (req, res) => {
