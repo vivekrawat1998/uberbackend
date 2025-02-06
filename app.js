@@ -5,24 +5,43 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const app = express();
 const http = require('http').createServer(app);
-const io = require('socket.io')(http);
+
+// CORS Configuration
+const allowedOrigins = [
+  'https://uberclonefrontend.vercel.app',
+  'http://localhost:5173'
+];
+
+app.use(cors({
+  origin: function(origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// Socket.IO setup with CORS
+const io = require('socket.io')(http, {
+  cors: {
+    origin: allowedOrigins,
+    methods: ['GET', 'POST'],
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization']
+  },
+  transports: ['websocket', 'polling'],
+  allowEIO3: true
+});
+
 const userRouter = require("./routes/user.routes");
 const captainRouter = require('./routes/captain.routes');
 const mapRouter = require('./routes/maps.routes');
 const riderouter = require("./routes/ride.routes");
 const connectDB = require('./db/db');
-
-app.use(cors({
-  origin: ['https://uberclonefrontend.vercel.app', 'http://localhost:5173'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  credentials: true,
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
-io.engine.use(cors({
-  origin: ['https://uberclonefrontend.vercel.app', 'http://localhost:5173'],
-  credentials: true
-}));
 
 app.use(express.json());
 app.use(cookieParser());
@@ -42,6 +61,9 @@ app.get('/health', (req, res) => {
 app.get('/', (req, res) => {
   res.send('Hello World');
 });
+
+// Pre-flight requests
+app.options('*', cors());
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
