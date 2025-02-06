@@ -8,7 +8,8 @@ const userRoutes = require('./routes/user.routes');
 const rideRoutes = require('./routes/ride.routes');
 const mapRoutes = require('./routes/map.routes');
 const { sendMessageToSocketId } = require('./socket');
-const cookieParser = require('cookie-parser'); // Add this line
+const cookieParser = require('cookie-parser');
+const cors = require('cors');
 
 const app = express();
 const server = http.createServer(app);
@@ -18,15 +19,17 @@ const io = socketIo(server, {
   },
 });
 
-// Middleware
+app.use(cors({
+  origin: 'http://localhost:5173', 
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser()); // Add this line
+app.use(cookieParser());
 
-// Connect to database
 connectDB();
 
-// Routes
 app.use('/captains', captainRoutes);
 app.use('/users', userRoutes);
 app.use('/rides', rideRoutes);
@@ -41,6 +44,12 @@ io.on('connection', (socket) => {
   });
 
   // Add more WebSocket event handlers here
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something broke!');
 });
 
 const PORT = process.env.PORT || 5000;
