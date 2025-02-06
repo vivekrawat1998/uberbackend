@@ -1,6 +1,6 @@
 const {
   registerCaptain,
-  loginCaptain,
+  loginCaptain, // Add this line
   getCaptainProfile,
   logoutCaptain,
 } = require("../controllers/captain.controllers");

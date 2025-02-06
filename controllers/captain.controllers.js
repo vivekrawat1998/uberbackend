@@ -82,7 +82,7 @@ const logoutCaptain = async (req, res, next) => {
 
 module.exports = {
     registerCaptain,
+    loginCaptain, // Add this line
     getCaptainProfile,
     logoutCaptain
   };
-  
