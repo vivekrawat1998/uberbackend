@@ -6,26 +6,15 @@ const connectDB = require('./db/db');
 const captainRoutes = require('./routes/captain.routes');
 const userRoutes = require('./routes/user.routes');
 const rideRoutes = require('./routes/ride.routes');
-const mapRoutes = require('./routes/maps.routes'); // Changed from map.routes to maps.routes
+const mapRoutes = require('./routes/maps.routes'); 
 const { sendMessageToSocketId } = require('./socket');
 const cookieParser = require('cookie-parser');
-const cors = require('cors');
 
 const app = express();
 const server = http.createServer(app);
 
-const corsOptions = {
-  origin: ['http://localhost:5173', 'https://uberbackend-production.up.railway.app'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
-  credentials: true,
-  optionsSuccessStatus: 200
-};
 
-app.use(cors(corsOptions));
 
-// Enable pre-flight requests
-app.options('*', cors(corsOptions));
 
 const io = socketIo(server, {
   cors: corsOptions
@@ -42,7 +31,6 @@ app.use('/users', userRoutes);
 app.use('/rides', rideRoutes);
 app.use('/maps', mapRoutes);
 
-// WebSocket connection
 io.on('connection', (socket) => {
   console.log('New client connected', socket.id);
 
@@ -55,10 +43,8 @@ io.on('connection', (socket) => {
     socket.close();
   });
 
-  // Add more WebSocket event handlers here
 });
 
-// Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).send('Something broke!');

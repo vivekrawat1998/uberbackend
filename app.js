@@ -10,11 +10,17 @@ const riderouter = require("./routes/ride.routes");
 const cors = require('cors');
 const connectDB = require('./db/db');
 
-app.use(cors({
-  origin: 'http://localhost:5173', // Specify the allowed origin
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
-}));
+const corsOptions = {
+  origin: ['https://uberclonefrontend.vercel.app', 'https://uberbackend-production.up.railway.app'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
+
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
 app.use(cookieparser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

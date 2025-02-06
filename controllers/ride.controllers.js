@@ -5,7 +5,6 @@ const { sendMessageToSocketId } = require("../socket");
 const rideModel = require("../models/ride.model")
 
 module.exports.createRide = async (req, res) => {
-    console.log("Received Request Body:", req.body);
   
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -32,7 +31,6 @@ module.exports.createRide = async (req, res) => {
       const pickupCordinates = await mapServices.getAddressCoordinate(pickup);
       const distance = await mapServices.getDistanceTime(pickup,destination)
       const distanceInKm = distance.distance.value / 1000;
-      console.log("Pickup Coordinates:", pickupCordinates);
   
       const captainInRadius = await mapServices.getCaptainsInTheRadius(
         pickupCordinates.ltd,

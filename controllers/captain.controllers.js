@@ -4,10 +4,8 @@ const blackListTokenModel = require('../models/blacklisttoken.model');
 const { validationResult } = require('express-validator');
 
 const registerCaptain = async (req, res, next) => {
-    console.log("Register Captain Request Body:", req.body); // Add this line
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        console.log("Validation Errors:", errors.array()); // Add this line
         return res.status(400).json({ errors: errors.array() });
     }
 
@@ -16,7 +14,6 @@ const registerCaptain = async (req, res, next) => {
     const isCaptainAlreadyExist = await captainModel.findOne({ email });
 
     if (isCaptainAlreadyExist) {
-        console.log("Captain already exists"); // Add this line
         return res.status(400).json({ message: 'Captain already exist' });
     }
 
@@ -39,10 +36,8 @@ const registerCaptain = async (req, res, next) => {
 }
 
 const loginCaptain = async (req, res, next) => {
-    console.log("Login Captain Request Body:", req.body); // Add this line
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        console.log("Validation Errors:", errors.array()); // Add this line
         return res.status(400).json({ errors: errors.array() });
     }
 
@@ -51,14 +46,12 @@ const loginCaptain = async (req, res, next) => {
     const captain = await captainModel.findOne({ email }).select('+password');
 
     if (!captain) {
-        console.log("Invalid email or password"); // Add this line
         return res.status(401).json({ message: 'Invalid email or password' });
     }
 
     const isMatch = await captain.comparePassword(password);
 
     if (!isMatch) {
-        console.log("Invalid email or password"); // Add this line
         return res.status(401).json({ message: 'Invalid email or password' });
     }
 
