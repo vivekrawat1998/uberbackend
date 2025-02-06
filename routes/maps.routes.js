@@ -1,30 +1,10 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const authMiddleware = require("../middlewares/auth.middleware");
-const mapController = require("../controllers/map.controller");
-const { query } = require("express-validator");
+const mapController = require('../controllers/map.controller');
+const { authUser } = require('../middlewares/auth.middleware');
 
-router.get(
-  "/get-coordinates",
-  authMiddleware.authUser,
-  query("address").isString().isLength({ min: 3 }),
-  mapController.getCordinates
-);
-
-router.get(
-  "/get-distance",
-  authMiddleware.authUser,
-  query("origin").isString().isLength({ min: 3 }),
-  query("destination").isString().isLength({ min: 3 }),
-  authMiddleware.authUser,
-  mapController.getDistanceTime
-);
-
-router.get(
-  "/get-suggestions",
-  authMiddleware.authUser,
-  query("input").isString().isLength({ min: 3 }),
-  mapController.getAutoCompleteSuggestions
-);
+router.get('/coordinates', authUser, mapController.getCordinates);
+router.get('/distance-time', authUser, mapController.getDistanceTime);
+router.get('/autocomplete', authUser, mapController.getAutoCompleteSuggestions);
 
 module.exports = router;
