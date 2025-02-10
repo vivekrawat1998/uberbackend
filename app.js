@@ -16,18 +16,18 @@ const corsOptions = {
 
 // Apply CORS middleware first
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', '*');
+  res.header('Access-Control-Allow-Headers', '*');
   next();
 });
 
-app.use(cors(corsOptions));
+app.use(cors({
+  origin: '*',
+  methods: '*',
+  allowedHeaders: '*',
+  credentials: true
+}));
 
 // Enable pre-flight requests for all routes
 app.options('*', cors(corsOptions));
@@ -35,15 +35,22 @@ app.options('*', cors(corsOptions));
 // Socket.IO setup with CORS
 const io = require('socket.io')(http, {
   cors: {
-    origin: true, // Allow all origins
-    methods: ['GET', 'POST'],
-    credentials: true,
-    transports: ['websocket', 'polling']
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true
   },
+  transports: ['polling', 'websocket'],
   allowEIO3: true,
-  path: '/socket.io',
-  serveClient: false,
-  pingTimeout: 60000
+  path: '/socket.io/',
+  pingInterval: 10000,
+  pingTimeout: 5000,
+  cookie: false,
+  serveClient: false
+});
+
+// Add error handling for Socket.IO
+io.on('connect_error', (error) => {
+  console.error('Socket.IO connection error:', error);
 });
 
 const userRouter = require("./routes/user.routes");

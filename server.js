@@ -15,22 +15,17 @@ const app = express();
 const server = http.createServer(app);
 
 const corsOptions = {
-  origin: true, // Allow all origins
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+  origin: '*', // Allow all origins
+  methods: '*',
+  allowedHeaders: '*',
   credentials: true
 };
 
 // Apply CORS middleware first
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', '*');
+  res.header('Access-Control-Allow-Headers', '*');
   next();
 });
 
@@ -41,15 +36,17 @@ app.options('*', cors(corsOptions));
 
 const io = socketIo(server, {
   cors: {
-    origin: true, // Allow all origins
-    methods: ['GET', 'POST'],
-    credentials: true,
-    transports: ['websocket', 'polling']
+    origin: '*', // Allow all origins
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    credentials: true
   },
+  transports: ['polling', 'websocket'],
   allowEIO3: true,
-  path: '/socket.io',
-  serveClient: false,
-  pingTimeout: 60000
+  path: '/socket.io/',
+  pingInterval: 10000,
+  pingTimeout: 5000,
+  cookie: false,
+  serveClient: false
 });
 
 app.use(express.json());
@@ -66,15 +63,17 @@ app.use('/maps', mapRoutes);
 io.on('connection', (socket) => {
   console.log('New client connected', socket.id);
 
-  socket.on('disconnect', () => {
-    console.log('Client disconnected', socket.id);
+  socket.on('disconnect', (reason) => {
+    console.log('Client disconnected', socket.id, 'reason:', reason);
   });
 
-  socket.on('error', (err) => {
-    console.error('Socket encountered error: ', err.message, 'Closing socket');
-    socket.close();
+  socket.on('error', (error) => {
+    console.error('Socket error:', error);
   });
 
+  socket.on('connect_error', (error) => {
+    console.error('Connection error:', error);
+  });
 });
 
 app.use((err, req, res, next) => {
