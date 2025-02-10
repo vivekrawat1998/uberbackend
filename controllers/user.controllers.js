@@ -28,11 +28,6 @@ const registerUser = async (req, res, next) => {
 
   const token = user.generateAuthToken();
 
-  res.header(
-    "Access-Control-Allow-Origin",
-    "https://uberclonefrontend.vercel.app/"
-  );
-  res.header("Access-Control-Allow-Credentials", "true");
   res.status(201).json({ token, user });
 };
 
