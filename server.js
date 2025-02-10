@@ -34,20 +34,34 @@ app.use(cors(corsOptions));
 // Enable pre-flight requests for all routes
 app.options('*', cors(corsOptions));
 
+// CORS middleware configuration
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'https://uberclonefrontend.vercel.app');
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Methods', 'GET,HEAD,PUT,PATCH,POST,DELETE');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Expose-Headers', 'Content-Length');
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  next();
+});
+
 const io = socketIo(server, {
   cors: {
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    origin: 'https://uberclonefrontend.vercel.app',
+    methods: ['GET', 'POST'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization']
   },
-  allowEIO3: true,
-  upgradeTimeout: 30000,
-  pingInterval: 25000,
-  pingTimeout: 60000,
   transports: ['polling', 'websocket'],
+  pingTimeout: 60000,
+  pingInterval: 25000,
+  upgradeTimeout: 30000,
   allowUpgrades: true,
-  cookie: false
+  perMessageDeflate: false,
+  httpCompression: true,
+  path: '/socket.io/'
 });
 
 app.use(express.json());
