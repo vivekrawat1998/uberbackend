@@ -8,7 +8,7 @@ const http = require('http').createServer(app);
 
 // CORS Configuration
 const corsOptions = {
-  origin: ['https://uberclonefrontend.vercel.app', 'http://localhost:5173', 'https://uberbackend-production.up.railway.app'],
+  origin: true, // Allow all origins
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
   credentials: true
@@ -16,10 +16,7 @@ const corsOptions = {
 
 // Apply CORS middleware first
 app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  if (corsOptions.origin.includes(origin)) {
-    res.header('Access-Control-Allow-Origin', origin);
-  }
+  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
   res.header('Access-Control-Allow-Credentials', 'true');
   res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
   res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
@@ -38,12 +35,15 @@ app.options('*', cors(corsOptions));
 // Socket.IO setup with CORS
 const io = require('socket.io')(http, {
   cors: {
-    origin: corsOptions.origin,
+    origin: true, // Allow all origins
     methods: ['GET', 'POST'],
     credentials: true,
     transports: ['websocket', 'polling']
   },
-  allowEIO3: true
+  allowEIO3: true,
+  path: '/socket.io',
+  serveClient: false,
+  pingTimeout: 60000
 });
 
 const userRouter = require("./routes/user.routes");
