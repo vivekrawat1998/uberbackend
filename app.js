@@ -6,46 +6,30 @@ const cookieParser = require('cookie-parser');
 const app = express();
 const http = require('http').createServer(app);
 
-// CORS Configuration
-const corsOptions = {
-  origin: true, // Allow all origins
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
-  credentials: true
-};
-
-// Apply CORS middleware first
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', '*');
-  res.header('Access-Control-Allow-Headers', '*');
-  next();
-});
-
+// Single CORS configuration
 app.use(cors({
-  origin: '*',
-  methods: '*',
-  allowedHeaders: '*',
+  origin: ['https://uberclonefrontend.vercel.app', 'http://localhost:5173'],
+  methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   credentials: true
 }));
 
 // Enable pre-flight requests for all routes
-app.options('*', cors(corsOptions));
+app.options('*', cors());
 
 // Socket.IO setup with CORS
 const io = require('socket.io')(http, {
   cors: {
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    credentials: true
+    origin: ['https://uberclonefrontend.vercel.app', 'http://localhost:5173'],
+    methods: ['GET', 'POST'],
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization']
   },
   transports: ['polling', 'websocket'],
-  allowEIO3: true,
   path: '/socket.io/',
-  pingInterval: 10000,
-  pingTimeout: 5000,
-  cookie: false,
-  serveClient: false
+  pingTimeout: 60000,
+  pingInterval: 25000,
+  cookie: false
 });
 
 // Add error handling for Socket.IO
