@@ -36,17 +36,18 @@ app.options('*', cors(corsOptions));
 
 const io = socketIo(server, {
   cors: {
-    origin: '*', // Allow all origins
+    origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    credentials: true
+    credentials: true,
+    allowedHeaders: ['Content-Type', 'Authorization']
   },
-  transports: ['polling', 'websocket'],
   allowEIO3: true,
-  path: '/socket.io/',
-  pingInterval: 10000,
-  pingTimeout: 5000,
-  cookie: false,
-  serveClient: false
+  upgradeTimeout: 30000,
+  pingInterval: 25000,
+  pingTimeout: 60000,
+  transports: ['polling', 'websocket'],
+  allowUpgrades: true,
+  cookie: false
 });
 
 app.use(express.json());
@@ -63,6 +64,10 @@ app.use('/maps', mapRoutes);
 io.on('connection', (socket) => {
   console.log('New client connected', socket.id);
 
+  socket.conn.on('upgrade', (transport) => {
+    console.log('Transport upgraded to:', transport.name);
+  });
+
   socket.on('disconnect', (reason) => {
     console.log('Client disconnected', socket.id, 'reason:', reason);
   });
@@ -73,6 +78,10 @@ io.on('connection', (socket) => {
 
   socket.on('connect_error', (error) => {
     console.error('Connection error:', error);
+    // Try to reconnect with polling
+    if (socket.conn.transport.name === 'websocket') {
+      socket.conn.transport.name = 'polling';
+    }
   });
 });
 
