@@ -12,7 +12,7 @@ const cors = require("cors");
 
 const app = express();
 const server = http.createServer(app);
-const io = initializeSocket(server);
+initializeSocket(server); // Initialize socket with the server
 
 const corsOptions = {
   origin: ["https://uberclonefrontend.vercel.app", "http://localhost:5173"],
@@ -55,4 +55,4 @@ server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
 
-module.exports = { app, io };
+module.exports = { app };
