@@ -1,6 +1,7 @@
 {
   "name": "uberclone",
   "version": "1.0.0",
+  "description": "Uber clone backend",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -22,6 +23,6 @@
   "devDependencies": {
     "nodemon": "^2.0.22"
   },
-  "author": "vivek",
+  "author": "",
   "license": "ISC"
 }
