@@ -8,13 +8,25 @@ const http = require('http').createServer(app);
 
 // CORS Configuration
 const corsOptions = {
-  origin: ['https://uberclonefrontend.vercel.app', 'http://localhost:5173'],
+  origin: '*',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
   exposedHeaders: ['Access-Control-Allow-Origin'],
   credentials: true,
   optionsSuccessStatus: 200
 };
+
+// Apply CORS middleware before routes
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, Content-Length, X-Requested-With');
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
 
 app.use(cors(corsOptions));
 
