@@ -1,6 +1,7 @@
 const socketIo = require('socket.io');
 const userModel = require('./models/user.model');
 const captainModel = require('./models/captain.model');
+const { io } = require('./server');
 
 let io;
 
@@ -48,15 +49,8 @@ function initializeSocket(server) {
     });
 }
 
-const sendMessageToSocketId = (socketId, messageObject) => {
-
-console.log(messageObject);
-
-    if (io) {
-        io.to(socketId).emit(messageObject.event, messageObject.data);
-    } else {
-        console.log('Socket.io not initialized.');
-    }
-}
+const sendMessageToSocketId = (socketId, message) => {
+  io.to(socketId).emit(message.event, message.data);
+};
 
 module.exports = { initializeSocket, sendMessageToSocketId };

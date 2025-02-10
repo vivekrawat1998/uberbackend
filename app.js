@@ -7,32 +7,41 @@ const app = express();
 const http = require('http').createServer(app);
 
 // CORS Configuration
-const allowedOrigins = [
-  'https://uberclonefrontend.vercel.app',
-  'http://localhost:5173'
-];
-
-app.use(cors({
-  origin: function(origin, callback) {
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
-  credentials: true,
+const corsOptions = {
+  origin: [
+    'https://uberclonefrontend.vercel.app',
+    'https://uberbackend-production.up.railway.app'
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+  allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+  exposedHeaders: ['Access-Control-Allow-Origin', 'Access-Control-Allow-Credentials'],
+  credentials: true,
+  optionsSuccessStatus: 200,
+  preflightContinue: false
+};
+
+// Apply CORS middleware before any routes
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin);
+  res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin,X-Requested-With,Content-Type,Accept,Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  next();
+});
+
+app.use(cors(corsOptions));
+
+// Handle preflight requests
+app.options('*', (req, res) => {
+  res.status(200).end();
+});
 
 // Socket.IO setup with CORS
 const io = require('socket.io')(http, {
-  cors: {
-    origin: allowedOrigins,
-    methods: ['GET', 'POST'],
-    credentials: true,
-    allowedHeaders: ['Content-Type', 'Authorization']
-  },
+  cors: corsOptions,
   transports: ['websocket', 'polling'],
   allowEIO3: true
 });
@@ -61,9 +70,6 @@ app.get('/health', (req, res) => {
 app.get('/', (req, res) => {
   res.send('Hello World');
 });
-
-// Pre-flight requests
-app.options('*', cors());
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

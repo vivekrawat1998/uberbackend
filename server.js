@@ -15,16 +15,36 @@ const app = express();
 const server = http.createServer(app);
 
 const corsOptions = {
-  origin: ['https://uberclonefrontend.vercel.app/', 'https://uberbackend-production.up.railway.app'],
+  origin: [
+    'https://uberclonefrontend.vercel.app',
+    'https://uberbackend-production.up.railway.app'
+  ],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'Accept', 'Origin', 'X-Requested-With'],
+  exposedHeaders: ['Access-Control-Allow-Origin', 'Access-Control-Allow-Credentials'],
   credentials: true,
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
+  preflightContinue: false
 };
+
+// Apply CORS middleware before any routes
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', req.headers.origin);
+  res.header('Access-Control-Allow-Credentials', true);
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin,X-Requested-With,Content-Type,Accept,Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  next();
+});
 
 app.use(cors(corsOptions));
 
-app.options('*', cors(corsOptions));
+// Handle preflight requests
+app.options('*', (req, res) => {
+  res.status(200).end();
+});
 
 const io = socketIo(server, {
   cors: corsOptions
