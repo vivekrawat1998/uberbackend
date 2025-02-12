@@ -12,7 +12,7 @@ const cors = require("cors");
 
 const app = express();
 const server = http.createServer(app);
-initializeSocket(server); // Initialize socket with the server
+initializeSocket(server); 
 
 const corsOptions = {
   origin: ["https://uberclonefrontend.vercel.app", "http://localhost:5173"],
@@ -23,7 +23,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// Enable pre-flight requests for all routes
 app.options("*", cors(corsOptions));
 
 app.use(express.json());
