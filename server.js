@@ -15,7 +15,7 @@ const app = express();
 const server = http.createServer(app);
 
 const corsOptions = {
-  origin: ['https://uberclonefrontend.vercel.app', 'http://localhost:5173'],
+  origin: '*', 
   methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
   credentials: true
@@ -28,7 +28,7 @@ app.options('*', cors(corsOptions));
 
 const io = socketIo(server, {
   cors: {
-    origin: ['https://uberclonefrontend.vercel.app', 'http://localhost:5173'],
+    origin: '*', // Allow all origins
     methods: ['GET', 'POST'],
     credentials: true,
     allowedHeaders: ['Content-Type', 'Authorization']

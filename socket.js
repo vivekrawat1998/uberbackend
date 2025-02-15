@@ -3,7 +3,6 @@ const userModel = require('./models/user.model');
 const captainModel = require('./models/captain.model');
 const { io } = require('./server');
 
-let io;
 
 function initializeSocket(server) {
     io = socketIo(server, {
